@@ -1,31 +1,30 @@
-package com.kagmole.workshops.basicchat.webservice.rooms;
+package com.kagmole.workshops.basicchat.webservice.messages;
+
+import com.kagmole.workshops.basicchat.webservice.users.UserEntity;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.kagmole.workshops.basicchat.webservice.users.messages.MessageEntity;
-
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "`rooms`")
-public class RoomEntity implements Serializable {
+@Table(name = "`messages`")
+public class MessageEntity implements Serializable {
 	
 	private static final long serialVersionUID = 1_000000_000000L;
 	
@@ -35,7 +34,7 @@ public class RoomEntity implements Serializable {
  *                                                                            *
 \*----------------------------------------------------------------------------*/
 	
-	public RoomEntity() {
+	public MessageEntity() {
 	}
 	
 /*----------------------------------------------------------------------------*\
@@ -45,41 +44,43 @@ public class RoomEntity implements Serializable {
 \*----------------------------------------------------------------------------*/
 	
 	// Surrogate key
-	private Integer roomId;
+	private Integer messageId;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic(optional = false)
-	@Column(name = "`room_id`")
-	public Integer getRoomId() {
-		return roomId;
+	@Column(name = "`message_id`")
+	public Integer getMessageId() {
+		return messageId;
 	}
 	
-	public void setRoomId(Integer roomId) {
-		this.roomId = roomId;
+	public void setMessageId(Integer messageId) {
+		this.messageId = messageId;
 	}
 	
-	private String name;
+	// Author
+	private UserEntity author;
 	
-	@Column(name = "`name`")
-	public String getName() {
-		return name;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "`author_user_id`", referencedColumnName = "`user_id`")
+	public UserEntity getAuthor() {
+		return author;
 	}
 	
-	public void setName(String name) {
-		this.name = name;
+	public void setAuthor(UserEntity author) {
+		this.author = author;
 	}
 	
-	// Messages
-	private List<MessageEntity> messages;
+	// Content
+	private String content;
 	
-	@OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
-	public List<MessageEntity> getMessages() {
-		return messages;
+	@Column(name = "`content`")
+	public String getContent() {
+		return content;
 	}
 	
-	public void setMessages(List<MessageEntity> messages) {
-		this.messages = messages;
+	public void setContent(String content) {
+		this.content = content;
 	}
 	
 	// Creation date
@@ -117,7 +118,7 @@ public class RoomEntity implements Serializable {
 	@Override
 	public int hashCode() {
 		
-		return Objects.hash(getName());
+		return Objects.hash(getAuthor(), getContent());
 	}
 	
 	@Override
@@ -127,13 +128,14 @@ public class RoomEntity implements Serializable {
 			return true;
 		}
 		
-		if (!(object instanceof RoomEntity)) {
+		if (!(object instanceof MessageEntity)) {
 			return false;
 		}
 		
-		RoomEntity other = (RoomEntity) object;
+		MessageEntity other = (MessageEntity) object;
 		
-		return Objects.equals(getName(), other.getName());
+		return Objects.equals(getAuthor(), other.getAuthor())
+			&& Objects.equals(getContent(), other.getContent());
 	}
 	
 	@Override
@@ -141,12 +143,12 @@ public class RoomEntity implements Serializable {
 		
 		StringBuilder builder = new StringBuilder();
 		
-		builder.append("RoomEntity [roomId=");
-		builder.append(roomId);
-		builder.append(", name=");
-		builder.append(name);
-		builder.append(", messagesCount=");
-		builder.append((getMessages() != null ) ? getMessages().size() : 0);
+		builder.append("MessageEntity [messageId=");
+		builder.append(messageId);
+		builder.append(", author=");
+		builder.append(author);
+		builder.append(", content=");
+		builder.append(content);
 		builder.append(", creationDate=");
 		builder.append(creationDate);
 		builder.append(", lastUpdateDate=");

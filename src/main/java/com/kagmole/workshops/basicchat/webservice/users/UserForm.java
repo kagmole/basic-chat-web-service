@@ -1,32 +1,19 @@
 package com.kagmole.workshops.basicchat.webservice.users;
 
-import com.kagmole.workshops.basicchat.webservice.messages.MessageEntity;
+import com.kagmole.workshops.basicchat.webservice.shared.constraints.LocalPast;
+import com.kagmole.workshops.basicchat.webservice.shared.miscellaneous.ValidationGroup.Create;
+import com.kagmole.workshops.basicchat.webservice.shared.miscellaneous.ValidationGroup.Update;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.hibernate.validator.constraints.NotBlank;
 
-@Entity
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "`users`")
-public class UserEntity implements Serializable {
+public class UserForm implements Serializable {
 	
 	private static final long serialVersionUID = 1_000000_000000L;
 	
@@ -36,7 +23,7 @@ public class UserEntity implements Serializable {
  *                                                                            *
 \*----------------------------------------------------------------------------*/
 	
-	public UserEntity() {
+	public UserForm() {
 	}
 	
 /*----------------------------------------------------------------------------*\
@@ -45,25 +32,19 @@ public class UserEntity implements Serializable {
  *                                                                            *
 \*----------------------------------------------------------------------------*/
 	
-	// Surrogate key
-	private Integer userId;
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic(optional = false)
-	@Column(name = "`user_id`")
-	public Integer getUserId() {
-		return userId;
-	}
-	
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
-	
 	// Username
 	private String username;
 	
-	@Column(name = "`username`", unique = true)
+	@NotNull(
+			message = "Username must be set.",
+			groups = Create.class)
+	@Pattern(
+			regexp = "^(?=.{3,255}$)(?![-_.])(?!.*[-_.]{2})[-a-zA-Z0-9_.]+(?<![-_.])$",
+			message = "Username must contain at least 3 characters and cannot be longer than 255 characters.\n"
+					+ "It can contain letters, digits, hyphens (-), underscores (_) and dots (.).\n"
+					+ "However, it can only start and finish with a letter or a digit.\n"
+					+ "It also can't contain 2 hyphens, underscores or dots in a row.",
+			groups = Create.class)
 	public String getUsername() {
 		return username;
 	}
@@ -75,7 +56,15 @@ public class UserEntity implements Serializable {
 	// First name
 	private String firstName;
 	
-	@Column(name = "`first_name`")
+	@NotNull(
+			message = "First name must be set.",
+			groups = Create.class)
+	@NotBlank(
+			message = "First name cannot be blank.",
+			groups = {
+				Create.class,
+				Update.class
+			})
 	public String getFirstName() {
 		return firstName;
 	}
@@ -87,7 +76,15 @@ public class UserEntity implements Serializable {
 	// Last name
 	private String lastName;
 	
-	@Column(name = "`last_name`")
+	@NotNull(
+			message = "Last name must be set.",
+			groups = Create.class)
+	@NotBlank(
+			message = "Last name cannot be blank.",
+			groups = {
+				Create.class,
+				Update.class
+			})
 	public String getLastName() {
 		return lastName;
 	}
@@ -99,51 +96,21 @@ public class UserEntity implements Serializable {
 	// Birthday
 	private LocalDate birthday;
 	
-	@Column(name = "`birthday`")
+	@NotNull(
+			message = "Birthday must be set.",
+			groups = Create.class)
+	@LocalPast(
+			message = "Birthday must belong to the past.",
+			groups = {
+				Create.class,
+				Update.class
+			})
 	public LocalDate getBirthday() {
 		return birthday;
 	}
 	
 	public void setBirthday(LocalDate birthday) {
 		this.birthday = birthday;
-	}
-	
-	// Messages
-	private List<MessageEntity> messages;
-	
-	@OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
-	public List<MessageEntity> getMessages() {
-		return messages;
-	}
-	
-	public void setMessages(List<MessageEntity> messages) {
-		this.messages = messages;
-	}
-	
-	// Creation date
-	private Instant creationDate;
-	
-	@CreatedDate
-	@Column(name = "`creation_date`")
-	public Instant getCreationDate() {
-		return creationDate;
-	}
-	
-	public void setCreationDate(Instant creationDate) {
-		this.creationDate = creationDate;
-	}
-	
-	// Last update date
-	private Instant lastUpdateDate;
-	
-	@LastModifiedDate
-	@Column(name = "`last_update_date`")
-	public Instant getLastUpdateDate() {
-		return lastUpdateDate;
-	}
-	
-	public void setLastUpdateDate(Instant lastUpdateDate) {
-		this.lastUpdateDate = lastUpdateDate;
 	}
 	
 /*----------------------------------------------------------------------------*\
@@ -179,22 +146,14 @@ public class UserEntity implements Serializable {
 		
 		StringBuilder builder = new StringBuilder();
 		
-		builder.append("UserEntity [userId=");
-		builder.append(getUserId());
-		builder.append(", username=");
-		builder.append(getUsername());
+		builder.append("UserForm [username=");
+		builder.append(username);
 		builder.append(", firstName=");
-		builder.append(getFirstName());
+		builder.append(firstName);
 		builder.append(", lastName=");
-		builder.append(getLastName());
+		builder.append(lastName);
 		builder.append(", birthday=");
-		builder.append(getBirthday());
-		builder.append(", messagesCount=");
-		builder.append((getMessages() != null ) ? getMessages().size() : 0);
-		builder.append(", creationDate=");
-		builder.append(getCreationDate());
-		builder.append(", lastUpdateDate=");
-		builder.append(getLastUpdateDate());
+		builder.append(birthday);
 		builder.append("]");
 		
 		return builder.toString();
