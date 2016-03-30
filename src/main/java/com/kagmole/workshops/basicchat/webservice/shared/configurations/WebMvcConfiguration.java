@@ -2,10 +2,17 @@ package com.kagmole.workshops.basicchat.webservice.shared.configurations;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
+	
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		
+		registry.addMapping("/**");
+	}
 	
 	@Override
 	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
