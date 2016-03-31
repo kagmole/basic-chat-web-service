@@ -1,5 +1,6 @@
 package com.kagmole.workshops.basicchat.webservice.users;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kagmole.workshops.basicchat.webservice.messages.MessageEntity;
 
 import java.io.Serializable;
@@ -111,6 +112,7 @@ public class UserEntity implements Serializable {
 	// Messages
 	private List<MessageEntity> messages;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
 	public List<MessageEntity> getMessages() {
 		return messages;
