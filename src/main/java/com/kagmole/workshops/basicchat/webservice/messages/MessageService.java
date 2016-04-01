@@ -1,5 +1,7 @@
 package com.kagmole.workshops.basicchat.webservice.messages;
 
+import java.time.Instant;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,11 @@ public class MessageService {
 	public Iterable<MessageEntity> retrieveAll() {
 		
 		return messageRepository.findAll();
+	}
+	
+	public Iterable<MessageEntity> retrieveAllAfter(Instant sinceDate) {
+		
+		return messageRepository.findByCreationDateAfter(sinceDate);
 	}
 	
 	public MessageEntity create(MessageEntity message) {

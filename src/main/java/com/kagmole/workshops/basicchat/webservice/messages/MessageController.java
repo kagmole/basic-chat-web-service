@@ -6,6 +6,8 @@ import com.kagmole.workshops.basicchat.webservice.shared.miscellaneous.Validatio
 import com.kagmole.workshops.basicchat.webservice.users.UserEntity;
 import com.kagmole.workshops.basicchat.webservice.users.UserService;
 
+import java.time.Instant;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +42,22 @@ public class MessageController {
 	 * @version	v1.0.0
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public Iterable<MessageEntity> retrieveAll() {
+	public Iterable<MessageEntity> retrieveAll(
+			@RequestParam(required = false) Long after) {
 		
-		LOGGER.debug("[ENTERING] MessageController.retrieveAll");
+		LOGGER.debug("[ENTERING] MessageController.retrieveAll\n"
+				+ "since={}",
+				after);
 		
-		Iterable<MessageEntity> messages = messageService.retrieveAll();
+		Iterable<MessageEntity> messages = null;
+		
+		if (after == null) {
+			messages = messageService.retrieveAll();
+		} else {
+			Instant afterDate = Instant.ofEpochMilli(after);
+			
+			messages = messageService.retrieveAllAfter(afterDate);
+		}
 		
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("[SUCCESS] MessageController.retrieveAll\n"
