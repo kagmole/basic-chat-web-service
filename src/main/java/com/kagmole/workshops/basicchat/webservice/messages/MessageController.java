@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.HtmlUtils;
 
 @RestController
 @RequestMapping("/messages")
@@ -98,7 +97,7 @@ public class MessageController {
 		MessageEntity message = new MessageEntity();
 		
 		message.setAuthor(author);
-		message.setContent(HtmlUtils.htmlEscape(messageForm.getContent()));
+		message.setContent(messageForm.getContent());
 		
 		message = messageService.create(message);
 		

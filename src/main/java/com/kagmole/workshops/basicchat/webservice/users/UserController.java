@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.HtmlUtils;
 
 @RestController
 @RequestMapping("/users")
@@ -99,9 +98,9 @@ public class UserController {
 		
 		UserEntity user = new UserEntity();
 		
-		user.setUsername(HtmlUtils.htmlEscape(userForm.getUsername()));
-		user.setFirstName(HtmlUtils.htmlEscape(userForm.getFirstName()));
-		user.setLastName(HtmlUtils.htmlEscape(userForm.getLastName()));
+		user.setUsername(userForm.getUsername());
+		user.setFirstName(userForm.getFirstName());
+		user.setLastName(userForm.getLastName());
 		user.setBirthday(userForm.getBirthday());
 		
 		user.setMessages(Collections.emptyList());
@@ -143,11 +142,11 @@ public class UserController {
 		UserEntity user = userService.retrieve(userId);
 		
 		if (userForm.getFirstName() != null) {
-			user.setFirstName(HtmlUtils.htmlEscape(userForm.getFirstName()));
+			user.setFirstName(userForm.getFirstName());
 		}
 		
 		if (userForm.getLastName() != null) {
-			user.setLastName(HtmlUtils.htmlEscape(userForm.getLastName()));
+			user.setLastName(userForm.getLastName());
 		}
 		
 		if (userForm.getBirthday() != null) {
