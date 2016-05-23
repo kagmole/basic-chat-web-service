@@ -98,7 +98,7 @@ public class ExceptionEntity implements Serializable {
 	@Override
 	public int hashCode() {
 		
-		return Objects.hash(statusCode, errorCode);
+		return Objects.hash(getStatusCode(), getErrorCode());
 	}
 	
 	@Override
@@ -114,8 +114,8 @@ public class ExceptionEntity implements Serializable {
 		
 		ExceptionEntity other = (ExceptionEntity) object;
 		
-		return Objects.equals(statusCode, other.statusCode)
-			&& Objects.equals(errorCode, other.errorCode);
+		return Objects.equals(getStatusCode(), other.getStatusCode())
+			&& Objects.equals(getErrorCode(), other.getErrorCode());
 	}
 	
 	@Override
@@ -124,15 +124,15 @@ public class ExceptionEntity implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		
 		builder.append("ExceptionEntity [statusCode=");
-		builder.append(statusCode);
+		builder.append(getStatusCode());
 		builder.append(", statusMessage=");
-		builder.append(statusMessage);
+		builder.append(getStatusMessage());
 		builder.append(", errorCode=");
-		builder.append(errorCode);
+		builder.append(getErrorCode());
 		builder.append(", errorMessage=");
-		builder.append(errorMessage);
+		builder.append(getErrorMessage());
 		builder.append(", creationDate=");
-		builder.append(creationDate);
+		builder.append(getCreationDate());
 		builder.append("]");
 		
 		return builder.toString();

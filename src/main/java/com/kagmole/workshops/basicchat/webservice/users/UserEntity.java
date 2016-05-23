@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,6 +29,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "`users`")
+@Access(AccessType.PROPERTY)
 public class UserEntity implements Serializable {
 	
 	private static final long serialVersionUID = 1_000000_000000L;
@@ -191,8 +194,12 @@ public class UserEntity implements Serializable {
 		builder.append(getLastName());
 		builder.append(", birthday=");
 		builder.append(getBirthday());
+		
+		List<MessageEntity> messages = getMessages();
+		
 		builder.append(", messagesCount=");
-		builder.append((getMessages() != null ) ? getMessages().size() : 0);
+		builder.append((messages != null) ? messages.size() : 0);
+		
 		builder.append(", creationDate=");
 		builder.append(getCreationDate());
 		builder.append(", lastUpdateDate=");

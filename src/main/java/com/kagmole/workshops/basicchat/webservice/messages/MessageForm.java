@@ -6,8 +6,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 public class MessageForm implements Serializable {
 	
@@ -32,7 +31,8 @@ public class MessageForm implements Serializable {
 	@NotNull(
 			message = "Content must be set.",
 			groups = Create.class)
-	@NotBlank(
+	@Pattern(
+			regexp = "[^\\s]+",
 			message = "Content cannot be blank.",
 			groups = Create.class)
 	private String content;
@@ -79,7 +79,7 @@ public class MessageForm implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		
 		builder.append("MessageForm [content=");
-		builder.append(content);
+		builder.append(getContent());
 		builder.append("]");
 		
 		return builder.toString();

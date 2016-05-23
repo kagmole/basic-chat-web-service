@@ -11,8 +11,6 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 public class UserForm implements Serializable {
 	
 	private static final long serialVersionUID = 1_000000_000000L;
@@ -59,7 +57,8 @@ public class UserForm implements Serializable {
 	@NotNull(
 			message = "First name must be set.",
 			groups = Create.class)
-	@NotBlank(
+	@Pattern(
+			regexp = "[^\\s]+",
 			message = "First name cannot be blank.",
 			groups = {
 				Create.class,
@@ -79,7 +78,8 @@ public class UserForm implements Serializable {
 	@NotNull(
 			message = "Last name must be set.",
 			groups = Create.class)
-	@NotBlank(
+	@Pattern(
+			regexp = "[^\\s]+",
 			message = "Last name cannot be blank.",
 			groups = {
 				Create.class,
@@ -147,13 +147,13 @@ public class UserForm implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		
 		builder.append("UserForm [username=");
-		builder.append(username);
+		builder.append(getUsername());
 		builder.append(", firstName=");
-		builder.append(firstName);
+		builder.append(getFirstName());
 		builder.append(", lastName=");
-		builder.append(lastName);
+		builder.append(getLastName());
 		builder.append(", birthday=");
-		builder.append(birthday);
+		builder.append(getBirthday());
 		builder.append("]");
 		
 		return builder.toString();

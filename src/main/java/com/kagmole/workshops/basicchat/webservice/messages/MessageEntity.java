@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,6 +26,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "`messages`")
+@Access(AccessType.PROPERTY)
 public class MessageEntity implements Serializable {
 	
 	private static final long serialVersionUID = 1_000000_000000L;
@@ -144,15 +147,15 @@ public class MessageEntity implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		
 		builder.append("MessageEntity [messageId=");
-		builder.append(messageId);
+		builder.append(getMessageId());
 		builder.append(", author=");
-		builder.append(author);
+		builder.append(getAuthor());
 		builder.append(", content=");
-		builder.append(content);
+		builder.append(getContent());
 		builder.append(", creationDate=");
-		builder.append(creationDate);
+		builder.append(getCreationDate());
 		builder.append(", lastUpdateDate=");
-		builder.append(lastUpdateDate);
+		builder.append(getLastUpdateDate());
 		builder.append("]");
 		
 		return builder.toString();
