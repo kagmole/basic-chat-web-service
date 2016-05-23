@@ -11,6 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,10 +28,16 @@ public class UserController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 	
+	private PasswordEncoder passwordEncoder;
+	
 	private UserService userService;
 	
 	@Autowired
-	public UserController(UserService userService) {
+	public UserController(
+			PasswordEncoder passwordEncoder,
+			UserService userService) {
+		
+		this.passwordEncoder = passwordEncoder;
 		this.userService = userService;
 	}
 	
@@ -99,6 +108,7 @@ public class UserController {
 		UserEntity user = new UserEntity();
 		
 		user.setUsername(userForm.getUsername());
+		user.setPassword(passwordEncoder.encode(userForm.getPassword()));
 		user.setFirstName(userForm.getFirstName());
 		user.setLastName(userForm.getLastName());
 		user.setBirthday(userForm.getBirthday());
@@ -118,10 +128,12 @@ public class UserController {
 	 * @since	v1.0.0
 	 * @version	v1.0.0
 	 */
+	@PreAuthorize("#principalUser.userId == #userId or hasAuthority('ADMINISTRATION')")
 	@RequestMapping(
 			value = "/{userId:\\d+}", method = RequestMethod.PATCH,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public UserEntity update(
+			@AuthenticationPrincipal UserEntity principalUser,
 			@PathVariable Integer userId,
 			@RequestBody @Validated(Update.class) UserForm userForm,
 			BindingResult result) {
@@ -140,6 +152,10 @@ public class UserController {
 		}
 		
 		UserEntity user = userService.retrieve(userId);
+		
+		if (userForm.getPassword() != null) {
+			user.setPassword(passwordEncoder.encode(userForm.getPassword()));
+		}
 		
 		if (userForm.getFirstName() != null) {
 			user.setFirstName(userForm.getFirstName());
@@ -166,8 +182,10 @@ public class UserController {
 	 * @since	v1.0.0
 	 * @version	v1.0.0
 	 */
+	@PreAuthorize("#principalUser.userId == #userId or hasAuthority('ADMINISTRATION')")
 	@RequestMapping(value = "/{userId:\\d+}", method = RequestMethod.DELETE)
 	public void delete(
+			@AuthenticationPrincipal UserEntity principalUser,
 			@PathVariable Integer userId) {
 		
 		LOGGER.debug("[ENTERING] UserController.delete\n"

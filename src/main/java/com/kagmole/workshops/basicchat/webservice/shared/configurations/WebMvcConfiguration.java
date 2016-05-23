@@ -13,14 +13,15 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
 		
 		registry
 			.addMapping("/**")
-			.allowedMethods("HEAD", "GET", "POST", "PUT", "PATCH", "DELETE");
+			.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE");
 	}
 	
 	@Override
 	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 		
 		// When those 2 are false, the content type is defined with the "Accept" header
-		configurer.favorParameter(false);
-		configurer.favorPathExtension(false);
+		configurer
+			.favorParameter(false)
+			.favorPathExtension(false);
 	}
 }

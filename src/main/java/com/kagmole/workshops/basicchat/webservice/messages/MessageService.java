@@ -20,9 +20,9 @@ public class MessageService {
 		return messageRepository.findAll();
 	}
 	
-	public Iterable<MessageEntity> retrieveAllAfter(Instant sinceDate) {
+	public Iterable<MessageEntity> retrieveAllAfter(Instant afterDate) {
 		
-		return messageRepository.findByCreationDateAfter(sinceDate);
+		return messageRepository.findByCreationDateAfter(afterDate);
 	}
 	
 	public MessageEntity create(MessageEntity message) {

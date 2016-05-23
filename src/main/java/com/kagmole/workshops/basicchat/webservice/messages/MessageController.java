@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import com.kagmole.workshops.basicchat.webservice.shared.exceptions.ValidationFailedException;
 import com.kagmole.workshops.basicchat.webservice.shared.miscellaneous.ValidationGroup.Create;
 import com.kagmole.workshops.basicchat.webservice.users.UserEntity;
-import com.kagmole.workshops.basicchat.webservice.users.UserService;
 
 import java.time.Instant;
 
@@ -12,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,12 +28,9 @@ public class MessageController {
 	
 	private MessageService messageService;
 	
-	private UserService userService;
-	
 	@Autowired
-	public MessageController(MessageService messageService, UserService userService) {
+	public MessageController(MessageService messageService) {
 		this.messageService = messageService;
-		this.userService = userService;
 	}
 	
 	/**
@@ -75,28 +72,26 @@ public class MessageController {
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public MessageEntity create(
-			@RequestParam Integer userId,
+			@AuthenticationPrincipal UserEntity principalUser,
 			@RequestBody @Validated(Create.class) MessageForm messageForm,
 			BindingResult result) {
 		
 		LOGGER.debug("[ENTERING] MessageController.create\n"
-				+ "userId={}\n"
+				+ "principalUser={}\n"
 				+ "messageForm={}",
-				userId, messageForm);
+				principalUser, messageForm);
 		
 		if (result.hasErrors()) {
 			ValidationFailedException exception = new ValidationFailedException(result);
 			
-			LOGGER.info("[FAIL]: MessageController.create\n{}", exception.getMessage());
+			LOGGER.info("[FAIL]: MessageController.create\n> {}", exception.getMessage());
 			
 			throw exception;
 		}
 		
-		UserEntity author = userService.retrieve(userId);
-		
 		MessageEntity message = new MessageEntity();
 		
-		message.setAuthor(author);
+		message.setAuthor(principalUser);
 		message.setContent(messageForm.getContent());
 		
 		message = messageService.create(message);
