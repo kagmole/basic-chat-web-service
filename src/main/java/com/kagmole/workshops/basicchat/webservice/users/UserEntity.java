@@ -2,12 +2,15 @@ package com.kagmole.workshops.basicchat.webservice.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kagmole.workshops.basicchat.webservice.messages.MessageEntity;
+import com.kagmole.workshops.basicchat.webservice.users.authorities.AuthorityEntity;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.StringJoiner;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -16,21 +19,26 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "`users`")
 @Access(AccessType.PROPERTY)
-public class UserEntity implements Serializable {
+public class UserEntity implements Serializable, UserDetails {
 	
 	private static final long serialVersionUID = 1_000000_000000L;
 	
@@ -67,6 +75,7 @@ public class UserEntity implements Serializable {
 	// Username
 	private String username;
 	
+	@Override
 	@Column(name = "`username`", unique = true)
 	public String getUsername() {
 		return username;
@@ -74,6 +83,101 @@ public class UserEntity implements Serializable {
 	
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	
+	// Authorities
+	private Set<AuthorityEntity> authorities;
+	
+	@Override
+	@JsonIgnore
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+		name = "`users_authorities`",
+		joinColumns = @JoinColumn(
+			name = "`user_id`",
+			referencedColumnName = "`user_id`"
+		),
+		inverseJoinColumns = @JoinColumn(
+			name = "`authority_id`",
+			referencedColumnName = "`authority_id`"
+		)
+	)
+	public Set<AuthorityEntity> getAuthorities() {
+		return authorities;
+	}
+	
+	public void setAuthorities(Set<AuthorityEntity> authorities) {
+		this.authorities = authorities;
+	}
+	
+	// Password
+	private String password;
+	
+	@Override
+	@JsonIgnore
+	@Column(name = "`password`")
+	public String getPassword() {
+		return password;
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	// Account non expired
+	public boolean accountNonExpired = true;
+	
+	@Override
+	@JsonIgnore
+	@Column(name = "`account_non_expired`")
+	public boolean isAccountNonExpired() {
+		return accountNonExpired;
+	}
+	
+	public void setAccountNonExpired(boolean accountNonExpired) {
+		this.accountNonExpired = accountNonExpired;
+	}
+	
+	// Account non locked
+	private boolean accountNonLocked = true;
+	
+	@Override
+	@JsonIgnore
+	@Column(name = "`account_non_locked`")
+	public boolean isAccountNonLocked() {
+		return accountNonLocked;
+	}
+	
+	public void setAccountNonLocked(boolean accountNonLocked) {
+		this.accountNonExpired = accountNonLocked;
+	}
+	
+	// Credentials non expired
+	private boolean credentialsNonExpired = true;
+	
+	@Override
+	@JsonIgnore
+	@Column(name = "`credentials_non_expired`")
+	public boolean isCredentialsNonExpired() {
+		return credentialsNonExpired;
+	}
+	
+	public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+		this.credentialsNonExpired = credentialsNonExpired;
+	}
+	
+	// Enabled
+	private boolean enabled = true;
+	
+	@Override
+	@JsonIgnore
+	@Column(name = "`enabled`")
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 	
 	// First name
@@ -188,6 +292,27 @@ public class UserEntity implements Serializable {
 		builder.append(getUserId());
 		builder.append(", username=");
 		builder.append(getUsername());
+		
+		Set<AuthorityEntity> authorities = getAuthorities();
+		
+		StringJoiner joiner = new StringJoiner("\", \"", "[\"", "\"]");
+		
+		if (authorities != null) {
+			
+			authorities.forEach(authority -> joiner.add(authority.getAuthority()));
+		}
+		
+		builder.append(", authorities=");
+		builder.append(joiner.toString());
+		
+		builder.append(", accountNonExpired=");
+		builder.append(isAccountNonExpired());
+		builder.append(", accountNonLocked=");
+		builder.append(isAccountNonLocked());
+		builder.append(", credentialsNonExpired=");
+		builder.append(isCredentialsNonExpired());
+		builder.append(", enabled=");
+		builder.append(isEnabled());
 		builder.append(", firstName=");
 		builder.append(getFirstName());
 		builder.append(", lastName=");

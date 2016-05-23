@@ -10,6 +10,7 @@ import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 public class UserForm implements Serializable {
 	
@@ -37,7 +38,7 @@ public class UserForm implements Serializable {
 			message = "Username must be set.",
 			groups = Create.class)
 	@Pattern(
-			regexp = "^(?=.{3,255}$)(?![-_.])(?!.*[-_.]{2})[-a-zA-Z0-9_.]+(?<![-_.])$",
+			regexp = "^(?=.{3,255}$)(?![-_.])(?!.*[-_.]{2})[\\w-_.]+(?<![-_.])$",
 			message = "Username must contain at least 3 characters and cannot be longer than 255 characters.\n"
 					+ "It can contain letters, digits, hyphens (-), underscores (_) and dots (.).\n"
 					+ "However, it can only start and finish with a letter or a digit.\n"
@@ -49,6 +50,27 @@ public class UserForm implements Serializable {
 	
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	
+	// Password
+	private String password;
+	
+	@NotNull(
+			message = "Password must be set.",
+			groups = Create.class)
+	@Size(
+			min = 8,
+			message = "Password must contain at least 8 characters.",
+			groups = {
+				Create.class,
+				Update.class
+			})
+	public String getPassword() {
+		return password;
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 	// First name
@@ -148,6 +170,8 @@ public class UserForm implements Serializable {
 		
 		builder.append("UserForm [username=");
 		builder.append(getUsername());
+		builder.append(", password=");
+		builder.append(getPassword());
 		builder.append(", firstName=");
 		builder.append(getFirstName());
 		builder.append(", lastName=");
