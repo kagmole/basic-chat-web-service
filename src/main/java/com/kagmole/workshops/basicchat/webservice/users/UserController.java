@@ -56,7 +56,7 @@ public class UserController {
 	 * @since	v1.0.0
 	 * @version	v1.0.0
 	 */
-	@RequestMapping(value = "/{userId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{userId:\\d+}", method = RequestMethod.GET)
 	public UserEntity retrieve(
 			@PathVariable Integer userId) {
 		
@@ -119,7 +119,7 @@ public class UserController {
 	 * @version	v1.0.0
 	 */
 	@RequestMapping(
-			value = "/{userId}", method = RequestMethod.PATCH,
+			value = "/{userId:\\d+}", method = RequestMethod.PATCH,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public UserEntity update(
 			@PathVariable Integer userId,
@@ -166,7 +166,7 @@ public class UserController {
 	 * @since	v1.0.0
 	 * @version	v1.0.0
 	 */
-	@RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{userId:\\d+}", method = RequestMethod.DELETE)
 	public void delete(
 			@PathVariable Integer userId) {
 		
